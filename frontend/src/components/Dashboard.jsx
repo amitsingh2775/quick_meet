@@ -11,12 +11,35 @@ import CreateWebinarForm from "@/pages/CreateWebinarForm";
 import AllWebinarsCard from "@/pages/AllWebinarsCard";
 import axios from "axios";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
+import Cookies from 'js-cookie';
+import { useEffect,useState } from 'react';
+import { fetchUserProfile } from "@/utils/profileService";
 
 export function Dashboard() {
   // State to keep track of the active tab
   const [activeTab, setActiveTab] = React.useState("all-requests");
+  const [userName, setUserName] = useState(null);
+  useEffect(() => {
+    const getUser = async () => {
+      const profile = await fetchUserProfile();
+      if (profile) {
+        setUserName(profile.name);
+      } else {
+        setUserName('Guest');
+      }
+    };
+
+    getUser();
+  }, []);
 
   const navigate = useNavigate(); // Correct usage of useNavigate
+  useEffect(() => {
+    const token = Cookies.get('token');
+    if (!token) {
+      navigate('/login');
+    }
+  })
+
 
   const logout = async (e) => {
     e.preventDefault(); // Prevent default form behavior (if any)
@@ -59,7 +82,7 @@ export function Dashboard() {
         <DropdownMenu.Root>
           <DropdownMenu.Trigger asChild>
             <button className="flex items-center p-2 mt-auto bg-gray-700 rounded hover:bg-gray-600 w-full">
-              <User className="mr-2" /> Username
+              <User className="mr-2" /> {userName ? userName : 'Guest'}
               <ChevronUp className="ml-auto" />
             </button>
           </DropdownMenu.Trigger>

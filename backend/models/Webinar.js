@@ -19,6 +19,10 @@ const webinarSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
+  meetingLink:{
+    type: String,
+    required: true,
+  },
   qrCode: {
     type: String, // This will store the generated QR code (Base64 or URL)
     required: true,

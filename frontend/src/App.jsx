@@ -6,10 +6,11 @@ import Dashboard from './components/Dashboard'
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 // import Cookies from 'js-cookie';
 // import { useEffect } from 'react';
+// import { useEffect } from 'react';
 // import * as jwt_decode from 'jwt-decode';
 
 function App() {
-  // const navigate = useNavigate();
+ // const navigate = useNavigate();
   // const location = useLocation(); // Get the current route
 
   // useEffect(() => {
@@ -50,7 +51,7 @@ function App() {
   //     }
   //   }
   // }, [navigate, location.pathname]); // Include location as a dependency
-
+  
   return (
     <>
       <Routes>

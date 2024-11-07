@@ -26,7 +26,7 @@ exports.register = async (req, res) => {
 
     // Set token in HTTP-only cookie
     res.cookie('token', token, {
-      httpOnly: true,
+      path: '/',                
       secure: false,
       maxAge: 60 * 60 * 1000 // 1 hour in milliseconds
     });
@@ -61,8 +61,8 @@ exports.login = async (req, res) => {
 
     // Set token in HTTP-only cookie
     res.cookie('token', token, {
-      httpOnly: true,
-      secure:false,
+      path: '/',                
+      secure:true,
       maxAge: 60 * 60 * 1000
     });
 
@@ -78,3 +78,18 @@ exports.logout = (req, res) => {
   res.clearCookie('token');
   res.json({ success: true, msg: 'Logged out successfully' });
 };
+
+exports.profile=async(req,res)=>{
+  try {
+    const instructorId = req.user.user.id;
+    const user=await User.findById(instructorId).select('-password')
+    console.log("user is ",user);
+    
+    if(!user){
+      return res.status(401).json({message:"user not found",success:false})
+    }
+    return res.status(201).json({user,success:true})
+  } catch (error) {
+    return res.status(500).send('Server error');
+  }
+}

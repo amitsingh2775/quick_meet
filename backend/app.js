@@ -32,9 +32,9 @@ const authRoutes = require('./routes/authRoutes');
 const webinarRoutes = require('./routes/webinarRoutes');
 const inviteRoutes = require('./routes/inviteRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
-const authCheck=require('./routes/authChek')
 
-app.use('/api',authCheck)
+
+
 app.use('/api/auth', authRoutes);
 app.use('/api/webinars', webinarRoutes);
 app.use('/api/invites', inviteRoutes);
