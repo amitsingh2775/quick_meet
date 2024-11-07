@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@radix-ui/react-tabs";
+import { Tabs, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -9,10 +9,29 @@ import { User, ChevronUp, FileText, Video, PlusCircle } from "lucide-react";
 import AllRequestsCard from "./AllRequestsCard";
 import CreateWebinarForm from "@/pages/CreateWebinarForm";
 import AllWebinarsCard from "@/pages/AllWebinarsCard";
+import axios from "axios";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 export function Dashboard() {
   // State to keep track of the active tab
   const [activeTab, setActiveTab] = React.useState("all-requests");
+
+  const navigate = useNavigate(); // Correct usage of useNavigate
+
+  const logout = async (e) => {
+    e.preventDefault(); // Prevent default form behavior (if any)
+    try {
+      const res = await axios.post('http://localhost:5000/api/auth/logout', {}, { withCredentials: true });
+      console.log("response", res);
+
+      if (res.data.success === true) {
+        console.log("Logout successful");
+        navigate('/login'); // Correct usage of navigate
+      }
+    } catch (error) {
+      alert("Something went wrong while logging out.");
+    }
+  };
 
   return (
     <div className="flex flex-col md:flex-row h-screen">
@@ -46,24 +65,18 @@ export function Dashboard() {
           </DropdownMenu.Trigger>
           <DropdownMenu.Content side="top" className="bg-gray-700 w-[--radix-popper-anchor-width]">
             <DropdownMenu.Item className="p-2 hover:bg-gray-600 rounded">Account</DropdownMenu.Item>
-            <DropdownMenu.Item className="p-2 hover:bg-gray-600 rounded">Sign out</DropdownMenu.Item>
+            <button onClick={logout}> {/* Changed to onClick */}
+              <DropdownMenu.Item className="p-2 hover:bg-gray-600 rounded">Sign out</DropdownMenu.Item>
+            </button>
           </DropdownMenu.Content>
         </DropdownMenu.Root>
       </div>
 
       {/* Main Content */}
       <div className="flex-1 bg-gray-900 text-white p-4 overflow-auto">
-        {activeTab === "all-requests" && (
-          <AllRequestsCard />
-        )}
-
-        {activeTab === "webinars" && (
-          <AllWebinarsCard />
-        )}
-
-        {activeTab === "create-webinar" && (
-          <CreateWebinarForm />
-        )}
+        {activeTab === "all-requests" && <AllRequestsCard />}
+        {activeTab === "webinars" && <AllWebinarsCard />}
+        {activeTab === "create-webinar" && <CreateWebinarForm />}
       </div>
     </div>
   );
