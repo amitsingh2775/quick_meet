@@ -22,13 +22,13 @@ exports.register = async (req, res) => {
 
     // Generate JWT token
     const payload = { user: { id: user.id } };
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1d' });
 
     // Set token in HTTP-only cookie
     res.cookie('token', token, {
       path: '/',                
       secure: false,
-      maxAge: 60 * 60 * 1000 // 1 hour in milliseconds
+      maxAge:24 * 60 * 60 * 1000
     });
 
     res.status(201).json({ success: true });
@@ -57,13 +57,13 @@ exports.login = async (req, res) => {
 
     // Generate JWT token
     const payload = { user: { id: user.id } };
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1d' });
 
     // Set token in HTTP-only cookie
     res.cookie('token', token, {
       path: '/',                
       secure:true,
-      maxAge: 60 * 60 * 1000
+      maxAge: 24 * 60 * 60 * 1000
     });
 
     res.json({ success: true });

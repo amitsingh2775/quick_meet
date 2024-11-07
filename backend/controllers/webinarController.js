@@ -36,14 +36,54 @@ const createWebinar = async (req, res) => {
   }
 };
 
-// Get all webinars for the logged-in instructor
+
+// Get all webinars for the logged-in instructor with status
 const getWebinars = async (req, res) => {
   try {
-    const webinars = await Webinar.find({ instructor: req.user._id });
-    res.json(webinars);
+    const instructorId = req.user.user.id;
+    
+    
+
+    // Find all webinars for the instructor
+    const webinars = await Webinar.find({ instructor: instructorId }).populate('instructor', 'name').lean();
+    //console.log("all webinars",webinars);
+    
+
+    // Map each webinar to format as per the image's requirements
+    const webinarsWithStatus = webinars.map((webinar) => {
+      // Calculate the status of the webinar based on its scheduled time
+      const currentTime = new Date();
+      const startTime = new Date(webinar.scheduledTime);
+      const endTime = new Date(webinar.scheduledTime);
+      endTime.setHours(endTime.getHours() + 1); // Assume webinars last 1 hour
+
+      let status;
+      if (currentTime < startTime) {
+        status = 'Upcoming';
+      } else if (currentTime >= startTime && currentTime <= endTime) {
+        status = 'Ongoing';
+      } else {
+        status = 'Completed';
+      }
+
+      // Format the webinar data as per requirements
+      return {
+        id: webinar._id,
+        title: webinar.title,
+        name:webinar.instructor?.name,
+        scheduledTime: webinar.scheduledTime,
+        status
+      };
+    });
+
+    // Respond with the formatted data
+    res.json({
+      success: true,
+      webinars: webinarsWithStatus,
+    });
   } catch (error) {
     console.error('Error Fetching Webinars:', error);
-    res.status(500).json({ message: 'Error fetching webinars' });
+    res.status(500).json({ success: false, message: 'Error fetching webinars' });
   }
 };
 

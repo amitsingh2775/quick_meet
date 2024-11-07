@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 
-// Webinar Schema
 const webinarSchema = new mongoose.Schema({
   instructor: {
     type: mongoose.Schema.Types.ObjectId,
@@ -19,18 +18,26 @@ const webinarSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
-  meetingLink:{
+  meetingLink: {
     type: String,
     required: true,
   },
   qrCode: {
-    type: String, // This will store the generated QR code (Base64 or URL)
+    type: String,
     required: true,
   },
-}, {
-  timestamps: true, // Adds createdAt and updatedAt fields
+}, { toJSON: { virtuals: true }, toObject: { virtuals: true } });
+
+// Status virtual field
+webinarSchema.virtual('status').get(function () {
+  const currentTime = new Date();
+  const startTime = new Date(this.scheduledTime);
+  const endTime = new Date(this.scheduledTime);
+  endTime.setHours(endTime.getHours() + 1); // Assume webinars last 1 hour
+
+  if (currentTime < startTime) return 'Upcoming';
+  if (currentTime >= startTime && currentTime <= endTime) return 'Ongoing';
+  return 'Completed';
 });
 
-const Webinar = mongoose.model('Webinar', webinarSchema);
-
-module.exports = Webinar;
+module.exports = mongoose.model('Webinar', webinarSchema);

@@ -1,31 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@radix-ui/react-avatar";
-
-const webinars = [
-  {
-    id: 1,
-    instructor: "Sofia Davis",
-    topic: "Introduction to React",
-    date: "2024-11-10",
-    status: "Ongoing",
-  },
-  {
-    id: 2,
-    instructor: "Jackson Lee",
-    topic: "Advanced JavaScript",
-    date: "2024-11-15",
-    status: "Upcoming",
-  },
-  {
-    id: 3,
-    instructor: "Isabella Nguyen",
-    topic: "Understanding Web APIs",
-    date: "2024-10-30",
-    status: "Completed",
-  },
-];
 
 function getStatusColor(status) {
   switch (status) {
@@ -39,6 +16,25 @@ function getStatusColor(status) {
 }
 
 function AllWebinarsCard() {
+  const [webinars, setWebinars] = useState([]);
+
+  // Fetch webinars when the component mounts
+  useEffect(() => {
+    const fetchWebinars = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/webinars/all', {
+          withCredentials: true,  // Include cookies in the request
+        }); // Update with your API endpoint
+        setWebinars(response.data.webinars);
+        //  console.log("res is ",response.data.webinars);
+
+      } catch (error) {
+        console.error("Error fetching webinars", error);
+      }
+    };
+    fetchWebinars();
+  }, []);
+
   return (
     <Card className="shadow-md p-4 bg-gray-800 text-white rounded-lg">
       <CardHeader>
@@ -54,19 +50,24 @@ function AllWebinarsCard() {
             >
               <div className="flex items-center space-x-4">
                 <Avatar className="w-10 h-10 rounded-full bg-gray-600 text-white flex items-center justify-center">
+                 
                   <span className="text-lg font-semibold">
-                    {webinar.instructor.charAt(0)}
+                    {webinar.name && typeof webinar.name === 'string'
+                      ? webinar.name.charAt(0)
+                      : 'N'}
                   </span>
+
                 </Avatar>
                 <div>
                   <p className="font-semibold text-base md:text-lg">
-                    {webinar.instructor}
+                    {/* Display fallback text if instructor is missing */}
+                    {webinar.name || 'Unknown Instructor'}
                   </p>
                   <p className="text-gray-400 text-sm md:text-base">
-                    {webinar.topic}
+                    {webinar.title}
                   </p>
                   <p className="text-gray-400 text-xs md:text-sm">
-                    {webinar.date} -{" "}
+                    {new Date(webinar.scheduledTime).toLocaleDateString()} -{" "}
                     <span className={getStatusColor(webinar.status)}>
                       {webinar.status}
                     </span>
