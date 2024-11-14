@@ -13,7 +13,7 @@ const authMiddleware = (req, res, next) => {
     // Verify and decode the token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded; // Attach user data to the request
-    console.log("in middleware", req.user);
+    //console.log("in middleware", req.user);
 
     next();
   } catch (err) {

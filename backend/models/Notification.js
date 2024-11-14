@@ -2,9 +2,9 @@ const mongoose = require('mongoose');
 
 const notificationSchema = new mongoose.Schema({
   user: {
-    type: mongoose.Schema.Types.ObjectId, // Reference to the User model
+    type: mongoose.Schema.Types.ObjectId, 
     required: true,
-    ref: 'User', // Link to the User model
+    ref: 'User', 
   },
   message: {
     type: String,
@@ -12,8 +12,8 @@ const notificationSchema = new mongoose.Schema({
   },
   read: {
     type: Boolean,
-    default: false, // Notifications are unread by default
+    default: false,
   },
-}, { timestamps: true }); // Automatically manage createdAt and updatedAt timestamps
+}, { timestamps: true }); 
 
 module.exports = mongoose.model('Notification', notificationSchema);

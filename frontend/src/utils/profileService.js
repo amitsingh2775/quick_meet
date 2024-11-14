@@ -8,7 +8,10 @@ export const fetchUserProfile = async () => {
       withCredentials: true, // Ensure cookies are sent with the request
     });
 
-    return response.data.user 
+    // console.log("response ",response);
+    // console.log("rw",response.data.name );
+    
+    return response.data 
   } catch (error) {
     console.error('Error fetching user profile:', error);
     return null;

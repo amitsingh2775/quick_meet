@@ -79,17 +79,91 @@ exports.logout = (req, res) => {
   res.json({ success: true, msg: 'Logged out successfully' });
 };
 
-exports.profile=async(req,res)=>{
-  try {
-    const instructorId = req.user.user.id;
-    const user=await User.findById(instructorId).select('-password')
-    console.log("user is ",user);
+// exports.profile=async(req,res)=>{
+//   try {
+//     const instructorId = req.user.user.id;
+//     const user=await User.findById(instructorId).select('-password')
+//     console.log("user is ",user);
     
-    if(!user){
-      return res.status(401).json({message:"user not found",success:false})
+//     if(!user){
+//       return res.status(401).json({message:"user not found",success:false})
+//     }
+//     return res.status(201).json({user,success:true})
+//   } catch (error) {
+//     return res.status(500).send('Server error');
+//   }
+// }
+
+
+
+// Controller to fetch user account details
+ exports.getAccountDetails = async (req, res) => {
+  try {
+    // Find user by ID from the request
+    const user = await User.findById(req.user.user.id).select("-password"); // Assuming the user ID is stored in req.user.id
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
     }
-    return res.status(201).json({user,success:true})
+
+    // Prepare the account details response
+    const accountDetails = {
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    };
+
+    // Add role-specific fields to the account details
+    if (user.role === 'instructor') {
+      accountDetails.experience = user.experience;
+      accountDetails.badges = user.badges;
+      accountDetails.rating = user.rating;
+      accountDetails.bio = user.bio;
+    } else if (user.role === 'student') {
+      accountDetails.joinedWebinars = user.joinedWebinars;
+      accountDetails.bio = user.bio;
+    }
+
+    // Send the account details as a response
+    return res.status(200).json(accountDetails);
   } catch (error) {
-    return res.status(500).send('Server error');
+    console.error(error);
+    return res.status(500).json({ message: 'Server Error' });
   }
-}
+};
+
+ exports.updateAccountDetails = async (req, res) => {
+  try {
+    const { name, experience, badges, rating, bio, joinedWebinars } = req.body;
+
+    // Find user by ID from the request (assuming the user ID is set in req.user.id)
+    const user = await User.findById(req.user.user.id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+
+    // Update role-specific fields
+    if (user.role === 'instructor') {
+      if (experience !== undefined) user.experience = experience;
+      if (badges) user.badges = badges;
+      if (rating !== undefined) user.rating = rating;
+      if (bio) user.bio = bio;
+    } else if (user.role === 'student') {
+      if (joinedWebinars !== undefined) user.joinedWebinars = joinedWebinars;
+      if (bio) user.bio = bio;
+    }
+
+    // Save the updated user to the database
+    await user.save();
+
+    // Send the updated user details as a response
+    return res.status(200).json({ message: 'Profile updated successfully', user });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Server Error' });
+  }
+};
+
+

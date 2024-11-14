@@ -70,6 +70,9 @@ const getWebinars = async (req, res) => {
       return {
         id: webinar._id,
         title: webinar.title,
+        description:webinar.description,
+        meetingLink:webinar.meetingLink,
+        qrCode:webinar.qrCode,
         name:webinar.instructor?.name,
         scheduledTime: webinar.scheduledTime,
         status
@@ -88,24 +91,53 @@ const getWebinars = async (req, res) => {
 };
 
 // Get webinar details by ID
-const getWebinarDetails = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const webinar = await Webinar.findById(id);
+// const getWebinarDetails = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const webinar = await Webinar.findById(id);
 
+//     if (!webinar) {
+//       return res.status(404).json({ message: 'Webinar not found' });
+//     }
+
+//     res.json(webinar);
+//   } catch (error) {
+//     console.error('Error Fetching Webinar Details:', error);
+//     res.status(500).json({ message: 'Error fetching webinar details' });
+//   }
+// };
+const updateWebinar = async (req, res) => {
+  const { id } = req.params;
+  const { title, description, scheduledTime, meetingLink } = req.body;
+  
+  try {
+    // Find the webinar by ID and update its data
+    const webinar = await Webinar.findById(id);
+  //  console.log("webianr is ",webinar);
+    
+    
     if (!webinar) {
       return res.status(404).json({ message: 'Webinar not found' });
     }
 
-    res.json(webinar);
+    // Update the webinar details
+    webinar.title = title || webinar.title;
+    webinar.description = description || webinar.description;
+    webinar.scheduledTime = scheduledTime || webinar.scheduledTime;
+    webinar.meetingLink = meetingLink || webinar.meetingLink;
+
+    // Save the updated webinar
+    const updatedWebinar = await webinar.save();
+
+    res.json({ success: true, webinar: updatedWebinar });
   } catch (error) {
-    console.error('Error Fetching Webinar Details:', error);
-    res.status(500).json({ message: 'Error fetching webinar details' });
+    console.error('Error Updating Webinar:', error);
+    res.status(500).json({ success: false, message: 'Error updating webinar' });
   }
 };
 
 module.exports = {
   createWebinar,
   getWebinars,
-  getWebinarDetails,
+  updateWebinar,
 };
