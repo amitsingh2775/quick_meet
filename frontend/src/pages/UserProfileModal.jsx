@@ -35,7 +35,7 @@ export default function UserProfile({ onClose, onEdit }) {
       const response = await axios.post('http://localhost:5000/api/auth/update', editableProfile, {
         withCredentials: true,
       });
-      setUserProfile(response.data.user);  // Assuming the updated profile is returned
+      setUserProfile(response.data.user);  // Assuming the updated profile is returned ..
       setIsEditing(false);
     } catch (error) {
       console.error("Error updating profile:", error);
