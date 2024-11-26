@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const User = require("../models/User"); // Adjust the path as needed
+const User = require("../models/User"); 
 
 // Register a new user
 exports.register = async (req, res) => {
@@ -119,6 +119,8 @@ exports.logout = (req, res) => {
       accountDetails.badges = user.badges;
       accountDetails.rating = user.rating;
       accountDetails.bio = user.bio;
+      accountDetails.techstack = user.techstack;
+
     } else if (user.role === 'student') {
       accountDetails.joinedWebinars = user.joinedWebinars;
       accountDetails.bio = user.bio;
@@ -134,7 +136,9 @@ exports.logout = (req, res) => {
 
  exports.updateAccountDetails = async (req, res) => {
   try {
-    const { name, experience, badges, rating, bio, joinedWebinars } = req.body;
+    console.log(req.body);
+    
+    const { name, experience, bio, techstack } = req.body;
 
     // Find user by ID from the request (assuming the user ID is set in req.user.id)
     const user = await User.findById(req.user.user.id);
@@ -146,10 +150,10 @@ exports.logout = (req, res) => {
 
     // Update role-specific fields
     if (user.role === 'instructor') {
+      if (name !== undefined) user.name = name;
       if (experience !== undefined) user.experience = experience;
-      if (badges) user.badges = badges;
-      if (rating !== undefined) user.rating = rating;
       if (bio) user.bio = bio;
+      if (techstack !== undefined) user.techstack = techstack; 
     } else if (user.role === 'student') {
       if (joinedWebinars !== undefined) user.joinedWebinars = joinedWebinars;
       if (bio) user.bio = bio;

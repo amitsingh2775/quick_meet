@@ -45,6 +45,11 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  techstack: {
+    type: [String],
+    default: [],
+  },
+
 }, {
   timestamps: true,
 });

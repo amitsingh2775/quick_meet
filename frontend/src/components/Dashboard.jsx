@@ -6,7 +6,7 @@ import { User, ChevronUp, FileText, Video, PlusCircle } from "lucide-react";
 import { fetchUserProfile } from "@/utils/profileService";
 import { Tabs, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import UserProfilePage from "@/pages/UserProfileModal";
+import UserProfile from "@/pages/UserProfileModal";
 import AllRequestsCard from "./AllRequestsCard";
 import CreateWebinarForm from "@/pages/CreateWebinarForm";
 import AllWebinarsCard from "@/pages/AllWebinarsCard";
@@ -14,7 +14,7 @@ import AllWebinarsCard from "@/pages/AllWebinarsCard";
 export function Dashboard() {
   const [activeTab, setActiveTab] = useState("all-requests");
   const [userName, setUserName] = useState(null);
-  const [userProfile, setUserProfile] = useState(null); // Store user profile data
+  const [userProfile, setUserProfile] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal open state
   const navigate = useNavigate();
 
@@ -24,7 +24,7 @@ export function Dashboard() {
       const profile = await fetchUserProfile();
       if (profile) {
         setUserName(profile.name);
-        setUserProfile(profile); // Set user profile data
+        setUserProfile(profile);
       } else {
         setUserName("Guest");
       }
@@ -53,24 +53,12 @@ export function Dashboard() {
     }
   };
 
-  // Open modal
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
-
-  // Close modal
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
-
   return (
     <div className="flex flex-col md:flex-row h-screen">
       {/* Sidebar */}
       <div className="w-full md:w-1/4 bg-gray-800 text-white p-4 flex flex-col justify-between md:h-screen">
         <div>
           <h2 className="text-xl font-bold text-center border-b border-gray-700">Quik_Meet</h2>
-
-          {/* Sidebar Tabs */}
           <Tabs defaultValue="all-requests" onValueChange={setActiveTab} className="mt-6 md:mt-20">
             <TabsList className="flex flex-col md:space-y-2">
               <TabsTrigger value="all-requests" className="p-2 hover:bg-gray-700 rounded flex items-center border-b border-gray-700">
@@ -86,18 +74,16 @@ export function Dashboard() {
           </Tabs>
         </div>
 
-        {/* Username and Dropdown at bottom */}
+        {/* Username and Dropdown */}
         <DropdownMenu.Root>
           <DropdownMenu.Trigger asChild>
             <button className="flex items-center p-2 mt-auto bg-gray-700 rounded hover:bg-gray-600 w-full">
-              <User className="mr-2" /> {userName ? userName : "Guest"}
+              <User className="mr-2" /> {userName || "Guest"}
               <ChevronUp className="ml-auto" />
             </button>
           </DropdownMenu.Trigger>
-
-          {/* Dropdown menu content */}
           <DropdownMenu.Content side="top" className="bg-gray-700 w-[--radix-popper-anchor-width]">
-            <DropdownMenu.Item className="p-2 hover:bg-gray-600 rounded" onClick={openModal}>
+            <DropdownMenu.Item className="p-2 hover:bg-gray-600 rounded" onClick={() => setIsModalOpen(true)}>
               Account
             </DropdownMenu.Item>
             <DropdownMenu.Item className="p-2 hover:bg-gray-600 rounded" onClick={logout}>
@@ -115,15 +101,9 @@ export function Dashboard() {
       </div>
 
       {/* User Profile Modal */}
-      {userProfile && isModalOpen && (
-        <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex justify-center items-center">
-          <div className="bg-[#161b22] p-6 rounded-lg w-full max-w-md shadow-lg"> {/* Medium-sized modal */}
-            <UserProfilePage userProfile={userProfile} />
-            {/* Close Button */}
-            <button onClick={closeModal} className="mt-4 bg-gray-700 text-white px-4 py-2 rounded-md">
-              Close
-            </button>
-          </div>
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <UserProfile userProfile={userProfile} onClose={() => setIsModalOpen(false)} />
         </div>
       )}
     </div>
